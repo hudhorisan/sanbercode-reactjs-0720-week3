@@ -1,4 +1,5 @@
 import React from 'react'
+import TimerMundur from './TimerMundur'
 import './TabelBuah.css'
 
 let dataHargaBuah = [
@@ -9,42 +10,40 @@ let dataHargaBuah = [
     {nama: "Mangga", harga: 30000, berat: 500}
   ]
 
-let renderTableHeader = ()=>{
-    let header = Object.keys(dataHargaBuah[0]);
-    return header.map((key)=>{
-        key = key.substr(0,1).toUpperCase()+key.substring(1)
-        return <th>{key}</th> 
-    })
+// Versi menggunakan class Component
+
+class Head extends React.Component {
+    render() {
+    return <th>{this.props.item}</th>;
+    }
 }
-  
+
+class Data extends React.Component {
+    render() {
+    return <tr>
+        <td>{this.props.nama}</td>
+        <td>{this.props.harga}</td>
+        <td>{this.props.berat} kg</td>
+    </tr>;
+    }
+}
 
 
-let renderTableData = ()=>{
-    return dataHargaBuah.map((data)=>{
-        const {nama,harga,berat} = data
-        return <tr>
-            <td>{nama}</td>
-            <td>{harga}</td>
-            <td>{(berat/1000).toFixed(2)} kg</td>
-        </tr>
-    })
-} 
-
-
-function TabelBuah(){
-    return (
-        <div className="tabelKomponen">
+class TabelBuah extends React.Component {
+    render() {
+        return <div className="card">
             <h1>Tabel Harga Buah</h1>
             <table>
-                <thead>
-                    {renderTableHeader()}
-                </thead>
-                <tbody>
-                    {renderTableData()}
-                </tbody>
-            </table>
-        </div>
-    );
+                {Object.keys(dataHargaBuah[0]).map((item)=>{
+                    return <Head item={item.substr(0,1).toUpperCase() + item.substring(1)}/>
+                })}
+                {dataHargaBuah.map((obj)=>{
+                    return <Data nama={obj.nama} harga={obj.harga} berat={obj.berat/1000} />
+                })}
+            </table>        
+            <TimerMundur start={100} />            
+        </div>;
+    }
 }
 
 export default TabelBuah;
