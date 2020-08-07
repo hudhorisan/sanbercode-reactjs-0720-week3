@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import TabelBuah from './tugas13/TabelBuah'
+import TabelBuah from './tugas11/tugas14/TabelBuah'
 
 function App() {
   return (
