@@ -9,53 +9,16 @@ const TabelBuah = ()=>{
     const [inputBerat,setInputBerat] = useState("");
     const [inputHarga,setInputHarga] = useState("")
     const [indexOfForm,setIndexOfForm] = useState(-1);
-
-    const handleNamaChange = (event)=> {setInputNama(event.target.value)}
-    const handleHargaChange = (event)=> {setInputHarga(event.target.value)}
-    const handleBeratChange = (event) => {setInputBerat(event.target.value)}
-    const handleUbah = (event) => {
-        let i = event.target.value
-        let nama = dataBuah[i].nama
-        let harga = dataBuah[i].harga
-        let berat = dataBuah[i].berat
-        setInputNama(nama)
-        setInputHarga(harga)
-        setInputBerat(berat)
-        setIndexOfForm(i)
-        console.log(inputNama)
-    }
-    const handleHapus = (event) => {
-        let dataBaru = dataBuah
-        dataBaru.splice(event.target.value,1)
-        setDataBuah(dataBaru)
-    }
-    const handleSubmit = (event) => {
-        event.preventDefault()
-        if (indexOfForm === -1) {
-        let dataBaru = [...dataBuah,{nama:inputNama,harga:inputHarga,berat:inputBerat}]
-        setDataBuah(dataBaru)
-        setInputNama("")
-        setInputHarga("")
-        setInputBerat("")
-        } else {
-            let dataBaru = dataBuah
-            dataBaru[indexOfForm].nama = inputNama
-            dataBaru[indexOfForm].harga = inputHarga
-            dataBaru[indexOfForm].berat = inputBerat
-            setDataBuah(dataBaru)
-            setInputNama("")
-            setInputHarga("")
-            setInputBerat("")
-            setIndexOfForm(-1) 
-        }
-        
-    }
+    const [statusForm,setStatusForm] = useState("create")
+    const [selectedID,setSelectedID] = useState(0)
 
     useEffect(()=>{
         if (dataBuah === null) {
             Axios.get('http://backendexample.sanbercloud.com/api/fruits')
             .then((res)=>{
-                console.log(res.data)
+                setDataBuah(res.data.map((el)=>{
+                    return {id:el.id,nama:el.name,harga:el.price,berat:el.weight}                    
+                }))
             })
             .catch((err)=>{
                 console.log(err)
@@ -63,6 +26,70 @@ const TabelBuah = ()=>{
         }
         
     })
+    
+
+    const handleNamaChange = (event)=> {setInputNama(event.target.value)}
+    const handleHargaChange = (event)=> {setInputHarga(event.target.value)}
+    const handleBeratChange = (event) => {setInputBerat(event.target.value)}
+
+    const handleUbah = (event) => {
+        let idBuah = parseInt(event.target.value)
+        let data = dataBuah.find(el=>el.id === idBuah) 
+        let nama = data.nama
+        let harga = data.harga
+        let berat = data.berat
+        setInputNama(nama)
+        setInputHarga(harga)
+        setInputBerat(berat)
+        setStatusForm("edit")
+        setSelectedID(idBuah)
+    }
+    const handleHapus = (event) => {
+        let idBuah = parseInt(event.target.value)
+        let dataBaru = dataBuah.filter(x=>x.id !== idBuah)
+        Axios
+            .delete(`http://backendexample.sanbercloud.com/api/fruits/${idBuah}`)
+            .then((res)=>{
+                console.log(res.data)
+            })
+        setDataBuah(dataBaru)
+    }
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        let nama = inputNama
+        let harga = inputHarga
+        let berat = inputBerat
+        if (statusForm === "create") {
+            Axios
+                .post('http://backendexample.sanbercloud.com/api/fruits',
+                {name:nama,price:harga,weight:berat})
+                .then((res)=>{
+                    setDataBuah([...dataBuah,{id:res.data.id,nama:nama,harga:harga,berat:berat}])
+                })
+            setInputNama("")
+            setInputHarga("")
+            setInputBerat("")
+        } else {
+            Axios
+                .put(`http://backendexample.sanbercloud.com/api/fruits/${selectedID}`,
+                {name:nama,price:harga,weight:berat})
+                .then(()=>{
+                    let buah = dataBuah.find(x=>x.id===selectedID)
+                    buah.nama = nama
+                    buah.harga = harga
+                    buah.berat = berat
+                    setDataBuah([...dataBuah])
+                })
+
+            setInputNama("")
+            setInputHarga("")
+            setInputBerat("")
+            setStatusForm("create")
+        }
+        
+    }
+
+   
 
     return (
         <>
@@ -79,13 +106,15 @@ const TabelBuah = ()=>{
                     </tr>
                 </thead>
                 <tbody>
-                    {dataBuah.map((item,index)=>{
+                    {(dataBuah !== null) && 
+                    dataBuah
+                    .map((item,index)=>{
                         return (<tr key={index}>
                             <td>{item.nama}</td>
                             <td>{item.harga}</td>
                             <td>{item.berat/1000} kg</td>
-                            <td><button onClick={handleUbah} value={index}>Ubah</button>
-                            <button onClick={handleHapus} value={index}>Hapus</button></td>
+                            <td><button onClick={handleUbah} value={item.id}>Ubah</button>
+                            <button onClick={handleHapus} value={item.id}>Hapus</button></td>
                         </tr>)
                     })}
                 </tbody>
