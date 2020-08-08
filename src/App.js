@@ -1,12 +1,13 @@
 import React from 'react';
 import './App.css';
-import TabelBuah from './tugas11/tugas14/TabelBuah'
+import {BrowserRouter as Router} from 'react-router-dom'
+import Routes from './tugas11/tugas15/Routes'
 
 function App() {
   return (
-    <>
-      <TabelBuah />
-    </>
+    <Router>
+      <Routes />
+    </Router>
   );
 
 

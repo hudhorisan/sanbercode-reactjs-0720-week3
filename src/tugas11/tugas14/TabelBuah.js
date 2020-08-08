@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react'
 import './TabelBuah.css'
 import Axios from 'axios';
 
-const TabelBuah = ()=>{
+const TabelBuah4 = ()=>{
     const [dataBuah,setDataBuah] = useState(null);
 
     const [inputNama,setInputNama] = useState("");
@@ -50,7 +50,7 @@ const TabelBuah = ()=>{
         Axios
             .delete(`http://backendexample.sanbercloud.com/api/fruits/${idBuah}`)
             .then((res)=>{
-                console.log(res.data)
+                console.log(res)
             })
         setDataBuah(dataBaru)
     }
@@ -132,4 +132,4 @@ const TabelBuah = ()=>{
         </>);
 }
 
-export default TabelBuah
+export default TabelBuah4

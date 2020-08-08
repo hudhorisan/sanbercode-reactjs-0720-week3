@@ -1,7 +1,7 @@
 import React from 'react'
 import './TabelBuah.css'
 
-class TabelBuah extends React.Component {
+class TabelBuah3 extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -123,4 +123,4 @@ class TabelBuah extends React.Component {
     }
 }
 
-export default TabelBuah
+export default TabelBuah3
